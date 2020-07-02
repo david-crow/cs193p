@@ -24,9 +24,9 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         }
     }
     
-    init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
+    init(numberOfPairs: Int, cardContentFactory: (Int) -> CardContent) {
         cards = [Card]()
-        for pairIndex in 0..<numberOfPairsOfCards {
+        for pairIndex in 0..<numberOfPairs {
             let content = cardContentFactory(pairIndex)
             cards.append(Card(content: content, id: pairIndex * 2))
             cards.append(Card(content: content, id: pairIndex * 2 + 1))
@@ -55,6 +55,10 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     }
     
     struct Card: Identifiable {
+        var isUnseen = true
+        var content: CardContent
+        var id: Int
+        
         var isFaceUp = false {
             didSet {
                 if isFaceUp {
@@ -70,10 +74,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                 stopUsingBonusTime()
             }
         }
-        
-        var isUnseen = true
-        var content: CardContent
-        var id: Int
         
         // MARK: - Bonus Time
         

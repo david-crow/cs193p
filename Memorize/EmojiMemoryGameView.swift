@@ -13,50 +13,39 @@ struct EmojiMemoryGameView: View {
     
     var body: some View {
         VStack {
-            Text(viewModel.currentTheme.name)
-                .fontWeight(Font.Weight.bold)
-                .font(Font.largeTitle)
-                .padding(.top)
-            
-            Text("Score: \(viewModel.score)")
-                .fontWeight(Font.Weight.bold)
-                .font(Font.headline)
-            
             Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture {
-                    withAnimation(.linear(duration: 0.5)) {
+                    withAnimation(.linear) {
                         self.viewModel.choose(card)
                     }
                 }
+                .foregroundColor(self.viewModel.theme.color)
                 .padding(5)
             }
             .padding(.horizontal)
             
-            Button(action: {
-                withAnimation(.easeInOut(duration: 2.0)) {
-                    self.viewModel.resetGame()
-                }
-            }) {
-                Image(systemName: "arrow.clockwise")
-            }
-            .padding()
-            .font(Font.title)
+            Text("Score: \(viewModel.score)")
+                .fontWeight(Font.Weight.bold)
+                .font(Font.headline)
         }
-        .foregroundColor(Color(viewModel.currentTheme.color))
+        .navigationBarItems(trailing: Button("New Game") {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                self.viewModel.resetGame()
+            }
+        })
     }
 }
 
 struct CardView: View {
     var card: MemoryGame<String>.Card
+    @State private var animatedBonusRemaining: Double = 0
     
     var body: some View {
         GeometryReader { geometry in
             self.body(for: geometry.size)
         }
     }
-    
-    @State private var animatedBonusRemaining: Double = 0
-    
+        
     private func startBonusTimeAnimation() {
         animatedBonusRemaining = card.bonusRemaining
         withAnimation(.linear(duration: card.bonusTimeRemaining)) {

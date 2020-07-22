@@ -7,23 +7,42 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct FlightSearch {
-    var destination: String
-    var origin: String?
-    var airline: String?
+    var destination: Airport
+    var origin: Airport?
+    var airline: Airline?
     var inTheAir: Bool = true
+}
+
+extension FlightSearch {
+    var predicate: NSPredicate {
+        var format = "destination_ = %@"
+        var args: [NSManagedObject] = [destination] // args could be [Any] if needed
+        if origin != nil {
+            format += " and origin_ = %@"
+            args.append(origin!)
+        }
+        if airline != nil {
+            format += " and airline_ = %@"
+            args.append(airline!)
+        }
+        if inTheAir { format += " and departure != nil" }
+        return NSPredicate(format: format, argumentArray: args)
+    }
 }
 
 struct FlightsEnrouteView: View {
     @Environment(\.presentationMode) var presentation
+    @Environment(\.managedObjectContext) var context
+
     @State var flightSearch: FlightSearch
     
     var body: some View {
         NavigationView {
             FlightList(flightSearch)
-//                .navigationBarItems(leading: simulation, trailing: filter)
-                .navigationBarItems(trailing: filter)
+                .navigationBarItems(leading: simulation, trailing: filter)
         }
     }
     
@@ -35,28 +54,28 @@ struct FlightsEnrouteView: View {
         }
         .sheet(isPresented: $showFilter) {
             FilterFlights(flightSearch: self.$flightSearch)
+                .environment(\.managedObjectContext, self.context)
         }
     }
-//
-//    // if no FlightAware credentials exist in Info.plist
-//    // then we simulate data from KSFO and KLAS (Las Vegas, NV)
-//    // the simulation time must match the times in the simulation data
-//    // so, to orient the UI, this simulation View shows the time we are simulating
-//    var simulation: some View {
-//        let isSimulating = Date.currentFlightTime.timeIntervalSince(Date()) < -1
-//        return Text(isSimulating ? DateFormatter.shortTime.string(from: Date.currentFlightTime) : "")
-//    }
+
+    // if no FlightAware credentials exist in Info.plist
+    // then we simulate data from KSFO and KLAS (Las Vegas, NV)
+    // the simulation time must match the times in the simulation data
+    // so, to orient the UI, this simulation View shows the time we are simulating
+    var simulation: some View {
+        let isSimulating = Date.currentFlightTime.timeIntervalSince(Date()) < -1
+        return Text(isSimulating ? DateFormatter.shortTime.string(from: Date.currentFlightTime) : "")
+    }
 }
 
 struct FlightList: View {
-    @ObservedObject var flightFetcher: FlightFetcher
-
+    @FetchRequest var flights: FetchedResults<Flight>
+    
     init(_ flightSearch: FlightSearch) {
-        self.flightFetcher = FlightFetcher(flightSearch: flightSearch)
+        let request = Flight.fetchRequest(flightSearch.predicate)
+        _flights = FetchRequest(fetchRequest: request)
     }
 
-    var flights: [FAFlight] { flightFetcher.latest }
-    
     var body: some View {
         List {
             ForEach(flights, id: \.ident) { flight in
@@ -68,7 +87,7 @@ struct FlightList: View {
     
     private var title: String {
         let title = "Flights"
-        if let destination = flights.first?.destination {
+        if let destination = flights.first?.destination.icao {
             return title + " to \(destination)"
         } else {
             return title
@@ -77,10 +96,7 @@ struct FlightList: View {
 }
 
 struct FlightListEntry: View {
-    @ObservedObject var allAirports = Airports.all
-    @ObservedObject var allAirlines = Airlines.all
-    
-    var flight: FAFlight
+    @ObservedObject var flight: Flight
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -92,7 +108,7 @@ struct FlightListEntry: View {
     }
     
     var name: String {
-        return "\(allAirlines[flight.airlineCode]?.friendlyName ?? "Unknown Airline") \(flight.number)"
+        return "\(flight.airline.friendlyName) \(flight.number)"
     }
 
     var arrives: String {
@@ -107,12 +123,12 @@ struct FlightListEntry: View {
     }
 
     var origin: String {
-        return "from " + (allAirports[flight.origin]?.friendlyName ?? "Unknown Airport")
+        return "from " + (flight.origin.friendlyName)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        FlightsEnrouteView(flightSearch: FlightSearch(destination: "KSFO"))
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        FlightsEnrouteView(flightSearch: FlightSearch(destination: "KSFO"))
+//    }
+//}

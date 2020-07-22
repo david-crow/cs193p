@@ -53,9 +53,7 @@ struct PaletteEditor: View {
                     Spacer()
                     Button(action: {
                         self.isShowing = false
-                    }, label: {
-                        Text("Done")
-                    }).padding()
+                    }, label: { Text("Done") }).padding()
                 }
             }
             Divider()

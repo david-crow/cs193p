@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct Spinning: ViewModifier {
-    @State var isVisible: Bool = false
+    @State var isVisible = false
     
     func body(content: Content) -> some View {
         content
@@ -21,6 +21,6 @@ struct Spinning: ViewModifier {
 
 extension View {
     func spinning() -> some View {
-        return self.modifier(Spinning())
+        self.modifier(Spinning())
     }
 }

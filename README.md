@@ -12,10 +12,10 @@ This is the classic card-matching game. It includes a point-scoring mechanic, cu
 - Shuffling cards at the start of a new game.
 
 #### Playing the game
-./demos/Memorize_playing.mov
+https://user-images.githubusercontent.com/8823138/219982010-409bb933-a217-4733-8b7b-fe44716b1958.mov
 
 #### Creating a new theme
-./demos/Memorize_editing.mov
+https://user-images.githubusercontent.com/8823138/219982023-35a2f8d4-9241-4949-863a-2447b84bed81.mov
 
 ## Set Game
 [SET](https://en.wikipedia.org/wiki/Set_(card_game)) is a card game requiring visualization, logical reasoning skills, and focus. Furthermore,
@@ -25,7 +25,7 @@ This is the classic card-matching game. It includes a point-scoring mechanic, cu
 This version allows players to deal three cards and/or restart the game at will. Card selections, matches, and deals are all animated.
 
 #### Playing the game
-./demos/Set.mov
+https://user-images.githubusercontent.com/8823138/219981987-7f21025e-a54c-456d-aa58-dea764859c06.mov
 
 #### Dealing every card in the game
 <img src="https://user-images.githubusercontent.com/8823138/219978389-73155c26-b6b9-4550-988e-864c0b46abd2.PNG" width=250 />
@@ -48,4 +48,4 @@ This one allows the user to place and resize emojis on a canvas. Emojis can be g
 ## Enroute
 Finally, this one allows the user to find and filter flights to/from selected airports. Data is pulled real-time from live flight information.
 
-./demos/Enroute.mov
+https://user-images.githubusercontent.com/8823138/219982034-a2dd5a24-059d-435a-b5ec-3e301e3fce4d.mov
